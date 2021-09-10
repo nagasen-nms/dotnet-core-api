@@ -25,7 +25,8 @@ namespace TodoApi.Controllers
 
             if (_context.TodoItems.Count() == 0)
             {
-                _context.TodoItems.Add(new TodoItem { Name = "Item1" });
+                // _context.TodoItems.Add(new TodoItem { Name = "Item1" });
+                _context.TodoItems.Add(new TodoItem { Commodity = "Item1" });
                 _context.SaveChanges();
             }
         }
@@ -37,7 +38,6 @@ namespace TodoApi.Controllers
 
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
             builder.DataSource = "tcp:mpwmoc01-sqlserver.database.windows.net,1433";
-            // builder.DataSource = "mpwmoc01-sqlserver.privatelink.database.windows.net";
             builder.UserID = "mpwmoc01sqlserver";
             builder.Password = "B1xusB1xus";
             builder.InitialCatalog = "mpwmoc01-sqldatabase";
@@ -47,7 +47,11 @@ namespace TodoApi.Controllers
                 Console.WriteLine("\nQuery data example:");
                 Console.WriteLine("=========================================\n");
 
-                String sql = "SELECT Currency, CurrencyAbbr FROM DATAMART.Currency";
+                // String sql = "SELECT TOP (10) * FROM DATAMART.Item";
+                // String sql = "SELECT TOP (1000) [Commodity], [ItemID], [SubCategory], [Category], [Item], [CommodityDetail] FROM [DATAMART].[Item]";
+                String sql = "SELECT TOP (1000) Commodity, ItemID, SubCategory, Category, Item, CommodityDetail FROM DATAMART.Item";
+                // String sql = "SELECT Currency, CurrencyAbbr FROM DATAMART.Currency";
+
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
@@ -56,8 +60,16 @@ namespace TodoApi.Controllers
                     {
                         while (reader.Read())
                         {
-                            Console.WriteLine("{0} {1}", reader.GetString(0), reader.GetString(1));
-                            _context.TodoItems.Add(new TodoItem { Name = reader.GetString(0) });
+                            // Console.WriteLine("{0} {1}", reader.GetString(0), reader.GetString(1));
+                            _context.TodoItems.Add(new TodoItem
+                            {
+                                Commodity = reader.GetString(0),
+                                ItemID = reader.GetInt32(1),
+                                SubCategory = reader.GetString(2),
+                                Category = reader.GetString(3),
+                                Item = reader.GetString(4),
+                                CommodityDetail = reader.GetString(5)
+                            });
                             _context.SaveChanges();
                         }
                     }
@@ -143,9 +155,9 @@ namespace TodoApi.Controllers
         //     return todoItem;
         // }
 
-        private bool TodoItemExists(long id)
-        {
-            return _context.TodoItems.Any(e => e.Id == id);
-        }
+        // private bool TodoItemExists(long id)
+        // {
+        //     return _context.TodoItems.Any(e => e.Id == id);
+        // }
     }
 }
